@@ -41,10 +41,8 @@ public class FullyConnectedLayer extends Layer {
 
         lastZ = z;
 
-        for(int i = 0; i < _inLength; i++) {
-            for (int j = 0; j < _outLength; j++) {
-                out[j] = reLu(z[j]);
-            }
+        for (int j = 0; j < _outLength; j++) {
+            out[j] = reLu(z[j]);
         }
 
         return out;
@@ -140,18 +138,18 @@ public class FullyConnectedLayer extends Layer {
 
     public double reLu(double input) {
         if(input >= 0 ) {
-            return 0;
-        } else {
             return input;
+        } else {
+            return leak * input;
         }
     }
 
 
     public double derivativeReLu(double input) {
         if(input >= 0 ) {
-            return leak;
-        } else {
             return 1;
+        } else {
+            return leak;
         }
     }
 }

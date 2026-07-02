@@ -44,19 +44,24 @@ public class MaxPoolLayer extends Layer {
         int[][] maxRows = new int [getOutputRows()][getOutputCols()];
         int[][] maxCols = new int [getOutputRows()][getOutputCols()];
 
-        for (int r = 0; r < getOutputRows(); r+= _stepSize) {
-            for (int c = 0; c < getOutputCols(); c+= _stepSize) {
-                double max = 0.0;
+        for (int r = 0; r < getOutputRows(); r++) {
+            for (int c = 0; c < getOutputCols(); c++) {
+                int inputRow = r * _stepSize;
+                int inputCol = c * _stepSize;
+                double max = input[inputRow][inputCol];
 
-                maxRows[r][c] = -1;
-                maxCols[r][c] = -1;
+                maxRows[r][c] = inputRow;
+                maxCols[r][c] = inputCol;
 
                 for(int x = 0; x < _windowSize; x++) {
                     for(int y = 0; y <_windowSize; y++) {
-                        if(max < input[r+x][c+y]) {
-                            max = input[r+x][c+y];
-                            maxRows[r][c] = r+x;
-                            maxCols[r][c] = c+y;
+                        int currentRow = inputRow + x;
+                        int currentCol = inputCol + y;
+
+                        if(max < input[currentRow][currentCol]) {
+                            max = input[currentRow][currentCol];
+                            maxRows[r][c] = currentRow;
+                            maxCols[r][c] = currentCol;
                         }
                     }
                 }

@@ -22,9 +22,8 @@ public class ConvolutionLayer extends Layer {
 
     private double _learningRate;
 
-    public ConvolutionLayer(long SEED, List<double[][]> _filters, int _filterSize, int _stepSize, int _inLength, int _inRows, int _inCols, int numFilters, double learningRate) {
+    public ConvolutionLayer(int _filterSize, int _stepSize, int _inLength, int _inRows, int _inCols, long SEED, int numFilters, double learningRate) {
         this.SEED = SEED;
-        this._filters = _filters;
         this._filterSize = _filterSize;
         this._stepSize = _stepSize;
         this._inLength = _inLength;
@@ -49,6 +48,8 @@ public class ConvolutionLayer extends Layer {
                     newFilter[i][j] = value;
                 }
             }
+
+            filters.add(newFilter);
         }
 
         _filters = filters;
@@ -142,7 +143,7 @@ public class ConvolutionLayer extends Layer {
 
     @Override
     public void backPropagation(double[] dLd0) {
-        List<double[][]> matrixInput = vectorToMatrix(dLd0, _inLength, _inRows, _inCols);
+        List<double[][]> matrixInput = vectorToMatrix(dLd0, getOutputLength(), getOutputRows(), getOutputCols());
         backPropagation(matrixInput);
     }
 
@@ -166,7 +167,7 @@ public class ConvolutionLayer extends Layer {
                 double[][] spacedError = spaceArray(error);
                 double[][] dLdF = convolve(_lastInput.get(i), spacedError, 1);
 
-                double[][] delta = multiply(dLdF, _learningRate);
+                double[][] delta = multiply(dLdF, -_learningRate);
                 double[][] newTotalDelta = add(filtersDelta.get(f), delta);
 
                 filtersDelta.set(f, newTotalDelta);
@@ -219,8 +220,8 @@ public class ConvolutionLayer extends Layer {
     }
 
     private double[][] fullConvolve(double[][] input, double[][] filter) {
-        int outRows = (input.length + filter.length) + 1;
-        int outCols = (input[0].length + filter[0].length) + 1;
+        int outRows = input.length + filter.length - 1;
+        int outCols = input[0].length + filter[0].length - 1;
 
         int inRows = input.length;
         int inCols = input[0].length;
